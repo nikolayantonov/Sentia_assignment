@@ -18,6 +18,7 @@ https://github.com/cfndsl/cfndsl
 https://github.com/seanedwards/cfer
 
 
-3) Created CloudFormation json as a reference model for ruby-generated json
+3) Created CloudFormation json as a reference model for ruby-generated json,
+validated using cfn-lint
 
 4) Generated json using ruby json pretty_generate api

@@ -5,6 +5,7 @@
       "KeyName":{
          "Description":"Name of an existing EC2 KeyPair to enable SSH access to the instance",
          "Type":"AWS::EC2::KeyPair::KeyName",
+         "Default": "aws_sentia_assignment",
          "ConstraintDescription":"must be the name of an existing EC2 KeyPair."
       }
    },
@@ -16,11 +17,6 @@
          "Type":"AWS::EC2::Instance",
          "Properties":{
             "InstanceType": "t2.nano",
-            "SecurityGroups":[
-               {
-                  "Ref":"InstanceSecurityGroup"
-               }
-            ],
             "SubnetId" : { "Ref" : "SubnetA" },
             "KeyName":{
                "Ref":"KeyName"
@@ -35,11 +31,9 @@
             "SecurityGroupIngress":[
                {
                   "IpProtocol":"tcp",
-                  "FromPort":"22",
-                  "ToPort":"22",
-                  "CidrIp":{
-                     "Ref":"SSHLocation"
-                  }
+                  "FromPort":22,
+                  "ToPort":22,
+                  "CidrIp": "35.158.238.101/32"
                }
             ]
          }
@@ -48,8 +42,8 @@
          "Type":"AWS::EC2::VPC",
          "Properties":{
             "CidrBlock":"10.0.0.0/16",
-            "EnableDnsSupport":"false",
-            "EnableDnsHostnames":"false",
+            "EnableDnsSupport": false,
+            "EnableDnsHostnames": false,
             "InstanceTenancy":"default"
          }
       },
@@ -135,14 +129,14 @@
             "SecurityGroupIngress":[
                {
                   "IpProtocol":"tcp",
-                  "FromPort":"22",
-                  "ToPort":"22",
+                  "FromPort":22,
+                  "ToPort":22,
                   "CidrIp":"35.158.238.101/32"
                }
             ],
             "SecurityGroupEgress":[
                {
-                  "IpProtocol":-1,
+                  "IpProtocol": "-1",
                   "CidrIp":"0.0.0.0/0"
                }
             ]

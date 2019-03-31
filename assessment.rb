@@ -3,21 +3,26 @@ require 'json'
 instance_type="t2.nano"
 allowed_ssh = "35.158.238.101/32"
 latest_ami_id = "ami-08935252a36e25f85"
+random_bucket_name = "bucket_" + ('0'..'z').to_a.shuffle.first(8).join
 
 tempHash = {
     "AWSTemplateFormatVersion" => "2010-09-09",
     "Description" => "AWS CloudFormation Assessment Template.",
     "Parameters" => {
-      "Keyname" => {"Description" => "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "KeyName" => {"Description" => "Name of an existing EC2 KeyPair to enable SSH access to the instance",
                     "Type" => "AWS::EC2::KeyPair::KeyName",
+                    "Default" => "aws_sentia_assignment",
                     "ConstraintDescription" => "must be the name of an existing EC2 keypair"},
       },
     "Resources" => {
-      "myS3Bucket" => { "Type" => "AWS::S3::Bucket"},
+      "S3Bucket" => { "Type" => "AWS::S3::Bucket",
+                              "Properties" => {
+                                "BucketName" => random_bucket_name
+                              }
+      },
       "EC2Instance" => {"Type" => "AWS::EC2::Instance",
                         "Properties" => {
                           "InstanceType" => instance_type,
-                          "SecurityGrops" => [{"Ref" => "InstanceSecurityGroup"}],
                           "SubnetId" => {"Ref" => "SubnetA"},
                           "KeyName" => {"Ref" => "KeyName"},
                           "ImageId" => latest_ami_id
@@ -28,8 +33,8 @@ tempHash = {
                                     "GroupDescription" => "Enable SSH access via port 22",
                                     "SecurityGroupIngress" => [{
                                       "IpProtocol" => "tcp",
-                                      "FromPort" => "22",
-                                      "ToPort" => "22",
+                                      "FromPort" => 22,
+                                      "ToPort" => 22,
                                       "CidrIp" => allowed_ssh
                                       }]
                                   }
@@ -37,8 +42,8 @@ tempHash = {
       "myVPC" => {"Type" => "AWS::EC2::VPC",
                   "Properties" => {
                     "CidrBlock" => "10.0.0.0/16",
-                    "EnableDnsSupport" => "false",
-                    "EnableDnsHostnames" => "false",
+                    "EnableDnsSupport" => false,
+                    "EnableDnsHostnames" => false,
                     "InstanceTenancy" => "default"
                   }
       },
@@ -112,14 +117,14 @@ tempHash = {
                              "SecurityGroupIngress" => [
                                 {
                                    "IpProtocol" => "tcp",
-                                   "FromPort" => "22",
-                                   "ToPort" => "22",
+                                   "FromPort" => 22,
+                                   "ToPort" => 22,
                                    "CidrIp" => "35.158.238.101/32"
                                 }
                              ],
                              "SecurityGroupEgress" => [
                                 {
-                                   "IpProtocol" => -1,
+                                   "IpProtocol" => "-1",
                                    "CidrIp" => "0.0.0.0/0"
                                 }
                              ]
