@@ -20,24 +20,35 @@ tempHash = {
                                 "BucketName" => random_bucket_name
                               }
       },
+      "SSHSecurityGroup" => {"Type" => "AWS::EC2::SecurityGroup",
+                          "Properties" => {
+                             "GroupName" => "Internet Group",
+                             "GroupDescription" => "SSH traffic in, all traffic out.",
+                             "VpcId" => { "Ref" => "myVPC" },
+                             "SecurityGroupIngress" => [
+                                {
+                                   "IpProtocol" => "tcp",
+                                   "FromPort" => 22,
+                                   "ToPort" => 22,
+                                   "CidrIp" => "35.158.238.101/32"
+                                }
+                             ],
+                             "SecurityGroupEgress" => [
+                                {
+                                   "IpProtocol" => "-1",
+                                   "CidrIp" => "0.0.0.0/0"
+                                }
+                             ]
+                          }
+      },
       "EC2Instance" => {"Type" => "AWS::EC2::Instance",
                         "Properties" => {
                           "InstanceType" => instance_type,
+                          "SecurityGroupIds" => [{ "Ref" => "SSHSecurityGroup" }],
                           "SubnetId" => {"Ref" => "SubnetA"},
                           "KeyName" => {"Ref" => "KeyName"},
                           "ImageId" => latest_ami_id
                         }
-      },
-      "InstanceSecurityGroup" => {"Type" => "AWS::EC2::SecurityGroup",
-                                  "Properties" => {
-                                    "GroupDescription" => "Enable SSH access via port 22",
-                                    "SecurityGroupIngress" => [{
-                                      "IpProtocol" => "tcp",
-                                      "FromPort" => 22,
-                                      "ToPort" => 22,
-                                      "CidrIp" => allowed_ssh
-                                      }]
-                                  }
       },
       "myVPC" => {"Type" => "AWS::EC2::VPC",
                   "Properties" => {
@@ -100,35 +111,14 @@ tempHash = {
       "SubnetBRouteTableAssociation" => {"Type" => "AWS::EC2::SubnetRouteTableAssociation",
                                         "Properties" => {
                                            "RouteTableId" => { "Ref" => "RouteTable" },
-                                           "SubnetId" => { "Ref" => "SubnetA" }
+                                           "SubnetId" => { "Ref" => "SubnetB" }
                                         }
       },
       "SubnetCRouteTableAssociation" => {"Type" => "AWS::EC2::SubnetRouteTableAssociation",
                                         "Properties" => {
                                            "RouteTableId" => { "Ref" => "RouteTable" },
-                                           "SubnetId" => { "Ref" => "SubnetA" }
+                                           "SubnetId" => { "Ref" => "SubnetC" }
                                         }
-      },
-      "SecurityGroup" => {"Type" => "AWS::EC2::SecurityGroup",
-                          "Properties" => {
-                             "GroupName" => "Internet Group",
-                             "GroupDescription" => "SSH traffic in, all traffic out.",
-                             "VpcId" => { "Ref" => "myVPC" },
-                             "SecurityGroupIngress" => [
-                                {
-                                   "IpProtocol" => "tcp",
-                                   "FromPort" => 22,
-                                   "ToPort" => 22,
-                                   "CidrIp" => "35.158.238.101/32"
-                                }
-                             ],
-                             "SecurityGroupEgress" => [
-                                {
-                                   "IpProtocol" => "-1",
-                                   "CidrIp" => "0.0.0.0/0"
-                                }
-                             ]
-                          }
       }
   }
 }

@@ -11,31 +11,43 @@
    },
    "Resources":{
       "myS3Bucket" : {
-         "Type" : "AWS::S3::Bucket"
-      },
-      "EC2Instance":{
-         "Type":"AWS::EC2::Instance",
-         "Properties":{
-            "InstanceType": "t2.nano",
-            "SubnetId" : { "Ref" : "SubnetA" },
-            "KeyName":{
-               "Ref":"KeyName"
-            },
-            "ImageId": "ami-08935252a36e25f85"
+         "Type" : "AWS::S3::Bucket",
+         "Properties" : {
+           "BucketName" : "bucket-2kqjwwr6"
          }
       },
-      "InstanceSecurityGroup":{
+      "SSHSecurityGroup":{
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{
-            "GroupDescription":"Enable SSH access via port 22",
+            "GroupName":"Internet Group",
+            "GroupDescription":"SSH traffic in, all traffic out.",
+            "VpcId": { "Ref" : "myVPC" },
             "SecurityGroupIngress":[
                {
                   "IpProtocol":"tcp",
                   "FromPort":22,
                   "ToPort":22,
-                  "CidrIp": "35.158.238.101/32"
+                  "CidrIp":"35.158.238.101/32"
+               }
+            ],
+            "SecurityGroupEgress":[
+               {
+                  "IpProtocol": "-1",
+                  "CidrIp":"0.0.0.0/0"
                }
             ]
+         }
+      },
+      "EC2Instance":{
+         "Type":"AWS::EC2::Instance",
+         "Properties":{
+            "InstanceType": "t2.nano",
+            "SecurityGroupIds" : [{ "Ref" : "SSHSecurityGroup" }],
+            "SubnetId" : { "Ref" : "SubnetA" },
+            "KeyName":{
+               "Ref":"KeyName"
+            },
+            "ImageId": "ami-08935252a36e25f85"
          }
       },
       "myVPC":{
@@ -118,28 +130,6 @@
          "Properties":{
             "RouteTableId": { "Ref" : "RouteTable" },
             "SubnetId": { "Ref" : "SubnetC" }
-         }
-      },
-      "SecurityGroup":{
-         "Type":"AWS::EC2::SecurityGroup",
-         "Properties":{
-            "GroupName":"Internet Group",
-            "GroupDescription":"SSH traffic in, all traffic out.",
-            "VpcId": { "Ref" : "myVPC" },
-            "SecurityGroupIngress":[
-               {
-                  "IpProtocol":"tcp",
-                  "FromPort":22,
-                  "ToPort":22,
-                  "CidrIp":"35.158.238.101/32"
-               }
-            ],
-            "SecurityGroupEgress":[
-               {
-                  "IpProtocol": "-1",
-                  "CidrIp":"0.0.0.0/0"
-               }
-            ]
          }
       }
    }
