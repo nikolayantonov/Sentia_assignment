@@ -44,10 +44,16 @@ tempHash = {
       "EC2Instance" => {"Type" => "AWS::EC2::Instance",
                         "Properties" => {
                           "InstanceType" => instance_type,
-                          "SecurityGroupIds" => [{ "Ref" => "SSHSecurityGroup" }],
-                          "SubnetId" => {"Ref" => "SubnetA"},
                           "KeyName" => {"Ref" => "KeyName"},
-                          "ImageId" => latest_ami_id
+                          "ImageId" => latest_ami_id,
+                          "NetworkInterfaces" => [{
+                            "DeviceIndex" => "0",
+                            "AssociatePublicIpAddress" => true,
+                            "DeleteOnTermination" => true,
+                            "SubnetId" => { "Ref" => "SubnetA" },
+                            "GroupSet" => [{ "Ref" => "SSHSecurityGroup" }]
+                          }
+                          ]
                         }
       },
       "myVPC" => {"Type" => "AWS::EC2::VPC",

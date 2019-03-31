@@ -13,7 +13,7 @@
     "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "bucket_GXA`5mjs"
+        "BucketName": "bucket_95AU_c<D"
       }
     },
     "SSHSecurityGroup": {
@@ -44,18 +44,25 @@
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "InstanceType": "t2.nano",
-        "SecurityGroupIds": [
-          {
-            "Ref": "SSHSecurityGroup"
-          }
-        ],
-        "SubnetId": {
-          "Ref": "SubnetA"
-        },
         "KeyName": {
           "Ref": "KeyName"
         },
-        "ImageId": "ami-08935252a36e25f85"
+        "ImageId": "ami-08935252a36e25f85",
+        "NetworkInterfaces": [
+          {
+            "DeviceIndex": "0",
+            "AssociatePublicIpAddress": true,
+            "DeleteOnTermination": true,
+            "SubnetId": {
+              "Ref": "SubnetA"
+            },
+            "GroupSet": [
+              {
+                "Ref": "SSHSecurityGroup"
+              }
+            ]
+          }
+        ]
       }
     },
     "myVPC": {
